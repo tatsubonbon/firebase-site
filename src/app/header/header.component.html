@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" routerLink="/posts">ホーム</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" routerLink="/posts">投稿</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        操作
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" style="cursor: pointer;" (click)="onFetchData()">取得</a></li>
+                        <li><a class="dropdown-item" style="cursor: pointer;" (click)="onSave()">保存</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <form class="d-flex">
+                <button class="btn btn-outline-success" type="submit" routerLink="/auth"
+                    *ngIf="!isAuthentificated">ログイン</button>
+                <button class="btn btn-outline-success" type="submit" (click)="Onlogout()"
+                    *ngIf="isAuthentificated">ログアウト</button>
+            </form>
+        </div>
+
+    </div>
+</nav>
