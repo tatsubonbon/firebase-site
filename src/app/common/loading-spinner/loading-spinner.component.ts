@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Subject } from 'rxjs';
+import { LoadingSpinnerService } from './loading-spinner.service';
 
 @Component({
   selector: 'app-loading-spinner',
@@ -6,5 +8,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./loading-spinner.component.css']
 })
 export class LoadingSpinnerComponent {
-
+  /** スピナーの表示、非表示フラグ */
+  public isLoading: Subject<boolean> = this.loadingSpinnerService.isLoading;
+  constructor(private loadingSpinnerService: LoadingSpinnerService) { }
 }

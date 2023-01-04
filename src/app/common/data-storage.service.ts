@@ -1,6 +1,7 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { map, tap } from 'rxjs/operators';
+import { throwError } from "rxjs";
+import { catchError, tap } from 'rxjs/operators';
 import { environment } from "src/environments/environment.prod";
 import { AuthService } from "../auth/auth.service";
 import { Post } from "../posts/post.model";
@@ -13,28 +14,25 @@ export class DataStorageService {
 
     storePosts() {
         const posts = this.postService.getPosts();
-        this.http.put(environment.apiUrl + '/posts.json', posts).subscribe(response => {
-            console.log(response);
-        });
+        return this.http.put(environment.apiUrl + '/posts.json', posts);
     }
 
     fetchPosts() {
         return this.http.get<Post[]>(environment.apiUrl + '/posts.json')
             .pipe(
-                map(posts => {
-                    if (posts !== null || undefined) {
-                        return posts.map(post => {
-                            return {
-                                ...post
-                            }
-                        });
-                    } else {
-                        return []
-                    }
-                }),
+                catchError(this.handleError),
                 tap(posts => {
                     console.log(posts);
                     this.postService.setPosts(posts);
                 }))
+    }
+
+    private handleError(errorRes: HttpErrorResponse) {
+        let errorMessage = 'An unknown error occured';
+        if (!errorRes.error || !errorRes.error.error) {
+            return throwError(() => new Error(errorMessage))
+        }
+        errorMessage = errorRes.error.error.messagel
+        return throwError(() => new Error(errorMessage))
     }
 }

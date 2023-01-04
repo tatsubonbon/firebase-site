@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
+import { LoadingSpinnerService } from '../common/loading-spinner/loading-spinner.service';
 import { AuthReponseData, AuthService } from './auth.service';
 
 @Component({
@@ -11,13 +12,12 @@ import { AuthReponseData, AuthService } from './auth.service';
 })
 export class AuthComponent {
   isLoginMode = true;
-  isLoading = false;
   error: string = '';
 
 
   private closeSub: Subscription | undefined;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(private authService: AuthService, private router: Router, private loadingSpinnerService: LoadingSpinnerService) { }
 
   ngOnInit(): void {
   }
@@ -42,7 +42,7 @@ export class AuthComponent {
 
     let authObs: Observable<AuthReponseData>;
 
-    this.isLoading = true;
+    this.loadingSpinnerService.show()
     if (this.isLoginMode) {
       authObs = this.authService.login(email, password);
     } else {
@@ -51,12 +51,12 @@ export class AuthComponent {
 
     authObs.subscribe(response => {
       console.log(response);
-      this.isLoading = false;
+      this.loadingSpinnerService.hide();
       this.router.navigate(['/posts']);
     }, errorMessage => {
       this.error = errorMessage;
       this.showErrorAlert(errorMessage);
-      this.isLoading = false;
+      this.loadingSpinnerService.hide();
     });
 
     form.reset();

@@ -5,30 +5,25 @@
 </div>
 <div class="row">
     <div class="col-xs-12">
-        <h1>Recipe Name</h1>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-12">
         <h1>{{ post?.name }}</h1>
     </div>
 </div>
 <div class="row">
     <div class="col-xs-12">
+        {{ post?.description }}
+    </div>
+</div>
+<div *ngIf="post" class="row mt-1 mb-1">
+    <div class="col-xs-12">
         <div class="btn-group active">
             <button type="button" id="dropdownMenuButton1" class="btn btn-primary dropdown-toggle"
                 data-bs-toggle="dropdown" aria-expanded="false">
-                Manage Recipe
+                投稿の管理
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item" style="cursor: pointer;" (click)="onEditPost()">Edit Post</a></li>
-                <li><a class="dropdown-item" style="cursor: pointer;" (click)="onDeletePost()">Delete Post</a></li>
+                <li><a class="dropdown-item" style="cursor: pointer;" (click)="onEditPost()">編集</a></li>
+                <li><a class="dropdown-item" style="cursor: pointer;" (click)="onDeletePost()">削除</a></li>
             </ul>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-xs-12">
-        {{ post?.description }}
     </div>
 </div>

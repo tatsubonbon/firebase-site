@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { DataStorageService } from 'src/app/common/data-storage.service';
+import { LoadingSpinnerService } from 'src/app/common/loading-spinner/loading-spinner.service';
 import { Post } from '../post.model';
 import { PostService } from '../post.service';
 
@@ -18,7 +20,12 @@ export class PostEditComponent implements OnInit {
     imagePath: new UntypedFormControl(''),
   });
 
-  constructor(private route: ActivatedRoute, private postService: PostService, private router: Router) { }
+  constructor(
+    private route: ActivatedRoute,
+    private postService: PostService,
+    private dataStorageService: DataStorageService,
+    private loadingService: LoadingSpinnerService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(
@@ -32,17 +39,33 @@ export class PostEditComponent implements OnInit {
 
 
   onSubmit() {
-    const newRecipe = new Post(this.postForm?.value['name'], this.postForm?.value['description'], this.postForm?.value['imagePath']);
+    const newRecipe = new Post(
+      this.postForm?.value['name'],
+      this.postForm?.value['description'],
+      this.postForm?.value['imagePath']
+    );
     if (this.editMode) {
       this.postService.updatePost(this.id!, this.postForm?.value);
+      this.save();
     } else {
       this.postService.addPost(this.postForm?.value);
+      this.save();
     }
     this.onCancel();
   }
 
   onCancel() {
     this.router.navigate(['posts']), { relativeTo: this.route };
+  }
+
+  private save() {
+    this.loadingService.show();
+    this.dataStorageService.storePosts().subscribe(
+      response => {
+        this.loadingService.hide();
+      }, error => {
+        this.loadingService.hide();
+      });
   }
 
   private initForm() {
