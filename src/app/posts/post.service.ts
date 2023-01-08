@@ -13,39 +13,39 @@ export class PostService {
 
     }
 
-    private posts: { [key: string]: Post } = {}
+    private postsDict: { [key: string]: Post } = {}
 
-    setPosts(posts: { [key: string]: Post }) {
-        this.posts = posts;
-        this.postsChanged.next(posts);
+    setPosts(postsDict: { [key: string]: Post }) {
+        this.postsDict = postsDict;
+        this.postsChanged.next(postsDict);
     }
 
     getPosts() {
         const postList: Post[] = []
-        Object.keys(this.posts).forEach((key: string) => {
-            postList.push(this.posts[key]);
+        Object.keys(this.postsDict).forEach((key: string) => {
+            postList.push(this.postsDict[key]);
         })
-        return this.posts;
+        return this.postsDict;
     }
 
     getPost(key: string) {
-        return this.posts[key];
+        return this.postsDict[key];
     }
 
-    addPost(post: { [key: string]: Post }) {
-        Object.keys(post).forEach((key: string) => {
-            this.posts[key] = post[key];
+    addPost(postsDict: { [key: string]: Post }) {
+        Object.keys(postsDict).forEach((key: string) => {
+            this.postsDict[key] = postsDict[key];
         })
-        this.postsChanged.next(this.posts);
+        this.postsChanged.next(this.postsDict);
     }
 
     updatePost(key: string, newPost: Post) {
-        this.posts[key] = newPost;
-        this.postsChanged.next(this.posts);
+        this.postsDict[key] = newPost;
+        this.postsChanged.next(this.postsDict);
     }
 
     deletePost(key: string) {
-        delete this.posts[key];
-        this.postsChanged.next(this.posts);
+        delete this.postsDict[key];
+        this.postsChanged.next(this.postsDict);
     }
 }

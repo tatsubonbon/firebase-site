@@ -13,7 +13,7 @@ import { PostService } from './post.service';
   styleUrls: ['./posts.component.css']
 })
 export class PostsComponent {
-  posts: { [key: string]: Post } = {};
+  postsDict: { [key: string]: Post } = {};
   subscription: Subscription = new Subscription;
   error = '';
 
@@ -28,11 +28,11 @@ export class PostsComponent {
 
   ngOnInit(): void {
     this.subscription = this.postService.postsChanged.subscribe(
-      (posts: { [key: string]: Post }) => {
-        this.posts = posts;
+      (postsDict: { [key: string]: Post }) => {
+        this.postsDict = postsDict;
       }
     )
-    this.posts = this.postService.getPosts();
+    this.postsDict = this.postService.getPosts();
   }
 
   ngOnDestroy(): void {

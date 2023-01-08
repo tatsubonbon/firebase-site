@@ -20,10 +20,10 @@ export class DataStorageService {
             );
     }
 
-    editPosts(post: { [key: string]: Post }) {
-        const key: string = Object.keys(post)[0];
+    editPosts(postDict: { [key: string]: Post }) {
+        const key: string = Object.keys(postDict)[0];
         const url = [environment.apiUrl, 'posts', key + '.json'];
-        return this.http.put(url.join("/"), post[key])
+        return this.http.put(url.join("/"), postDict[key])
             .pipe(
                 catchError(this.handleError)
             );

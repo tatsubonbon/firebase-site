@@ -10,18 +10,18 @@ import { PostService } from '../post.service';
   styleUrls: ['./post-list.component.css']
 })
 export class PostListComponent {
-  posts: { [key: string]: Post } = {};
+  postsDict: { [key: string]: Post } = {};
   subscription: Subscription = new Subscription;
 
   constructor(private postService: PostService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.subscription = this.postService.postsChanged.subscribe(
-      (posts) => {
-        this.posts = posts;
+      (postsDict) => {
+        this.postsDict = postsDict;
       }
     )
-    this.posts = this.postService.getPosts();
+    this.postsDict = this.postService.getPosts();
   }
 
   ngOnDestroy(): void {
