@@ -7,13 +7,14 @@ import { DataStorageService } from 'src/app/common/data-storage.service';
 import { LoadingSpinnerService } from 'src/app/common/loading-spinner/loading-spinner.service';
 import { Post } from '../post.model';
 import { PostService } from '../post.service';
+
 @Component({
   selector: 'app-post-edit',
   templateUrl: './post-edit.component.html',
   styleUrls: ['./post-edit.component.css']
 })
 export class PostEditComponent implements OnInit {
-  id: number | undefined;
+  id: string | undefined;
   editMode = false;
   error = '';
   postForm = new UntypedFormGroup({
@@ -34,7 +35,7 @@ export class PostEditComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(
       (params: Params) => {
-        this.id = +params['id'];
+        this.id = params['id'];
         this.editMode = params['id'] != null;
         this.initForm();
       }
@@ -50,12 +51,28 @@ export class PostEditComponent implements OnInit {
       this.authService.getUserId()
     );
 
+    this.loadingService.show();
     if (this.editMode) {
-      this.postService.updatePost(this.id!, post);
-      this.save();
+      this.dataStorageService.editPosts({ [this.id!]: post }).subscribe(
+        response => {
+          this.postService.updatePost(this.id!, post);
+          this.alertService.hideError();
+          this.loadingService.hide();
+        }, error => {
+          this.alertService.showError(error.message);
+          this.loadingService.hide();
+        });
     } else {
-      this.postService.addPost(post);
-      this.save();
+      this.dataStorageService.storePosts(post).subscribe(
+        response => {
+          const res = <{ [name: string]: string }>response;
+          this.postService.addPost({ [res["name"]]: post });
+          this.alertService.hideError();
+          this.loadingService.hide();
+        }, error => {
+          this.alertService.showError(error.message);
+          this.loadingService.hide();
+        });
     }
     this.onCancel();
   }
@@ -64,17 +81,6 @@ export class PostEditComponent implements OnInit {
     this.router.navigate(['posts']), { relativeTo: this.route };
   }
 
-  private save() {
-    this.loadingService.show();
-    this.dataStorageService.storePosts().subscribe(
-      response => {
-        this.alertService.hideError();
-        this.loadingService.hide();
-      }, error => {
-        this.alertService.showError(error.message);
-        this.loadingService.hide();
-      });
-  }
 
   private initForm() {
     let name = '';
@@ -83,9 +89,9 @@ export class PostEditComponent implements OnInit {
 
     if (this.editMode) {
       const post: Post = this.postService.getPost(this.id!);
-      name = post.name;
-      imagePath = post.imagePath;
-      description = post.description;
+      name = post?.name;
+      imagePath = post?.imagePath;
+      description = post?.description;
     }
 
     this.postForm = new UntypedFormGroup({

@@ -7,44 +7,45 @@ import { Post } from "./post.model";
 @Injectable({ providedIn: 'root' })
 export class PostService {
     PostSelected = new Subject<Post>();
-    postsChanged = new Subject<Post[]>();
+    postsChanged = new Subject<{ [key: string]: Post }>();
 
     constructor() {
 
     }
 
-    // private Posts: Post[] = [
-    //     new Post('Test Post', 'this is a test', 'https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg', [new Ingredient('Meet', 1), new Ingredient('French', 20)]),
-    //     new Post('Another Test Post', 'this is a test', 'https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg', [])
-    // ];
+    private posts: { [key: string]: Post } = {}
 
-    private posts: Post[] = []
-
-    setPosts(posts: Post[]) {
+    setPosts(posts: { [key: string]: Post }) {
         this.posts = posts;
-        this.postsChanged.next(this.posts);
+        this.postsChanged.next(posts);
     }
 
     getPosts() {
-        return this.posts.slice();
+        const postList: Post[] = []
+        Object.keys(this.posts).forEach((key: string) => {
+            postList.push(this.posts[key]);
+        })
+        return this.posts;
     }
 
-    getPost(index: number) {
-        return this.posts[index];
+    getPost(key: string) {
+        return this.posts[key];
     }
 
-    addPost(post: Post) {
-        this.posts.push(post);
-        this.postsChanged.next(this.posts.slice());
+    addPost(post: { [key: string]: Post }) {
+        Object.keys(post).forEach((key: string) => {
+            this.posts[key] = post[key];
+        })
+        this.postsChanged.next(this.posts);
     }
 
-    updatePost(index: number, newPost: Post) {
-        this.posts[index] = newPost;
-        this.postsChanged.next(this.posts.slice());
+    updatePost(key: string, newPost: Post) {
+        this.posts[key] = newPost;
+        this.postsChanged.next(this.posts);
     }
 
-    deletePost(index: number) {
-        this.posts.splice(index, 1);
-        this.postsChanged.next(this.posts.slice());
+    deletePost(key: string) {
+        delete this.posts[key];
+        this.postsChanged.next(this.posts);
     }
 }

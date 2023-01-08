@@ -8,7 +8,7 @@ import { Post } from '../../post.model';
 })
 export class PostItemComponent implements OnInit {
   @Input() post: Post | undefined;
-  @Input() index: number | undefined;
+  @Input() id: string | undefined;
 
   ngOnInit(): void {
   }

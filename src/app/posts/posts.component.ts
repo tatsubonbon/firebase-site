@@ -13,7 +13,7 @@ import { PostService } from './post.service';
   styleUrls: ['./posts.component.css']
 })
 export class PostsComponent {
-  posts: Post[] = [];
+  posts: { [key: string]: Post } = {};
   subscription: Subscription = new Subscription;
   error = '';
 
@@ -28,7 +28,7 @@ export class PostsComponent {
 
   ngOnInit(): void {
     this.subscription = this.postService.postsChanged.subscribe(
-      (posts: Post[]) => {
+      (posts: { [key: string]: Post }) => {
         this.posts = posts;
       }
     )
@@ -43,10 +43,7 @@ export class PostsComponent {
     this.router.navigate(['new'], { relativeTo: this.route });
   }
 
-
-
   onFetchData() {
-    console.log("fetch");
     this.loadingService.show();
     this.dataStorageService.fetchPosts().subscribe(
       response => {

@@ -12,7 +12,7 @@ import { PostService } from '../post.service';
 })
 export class PostDetailComponent implements OnInit {
   post: Post | undefined;
-  id: number | undefined;
+  id: string | undefined;
 
   constructor(
     private postService: PostService,
@@ -25,8 +25,8 @@ export class PostDetailComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(
       (params: Params) => {
-        this.id = +params['id'];
-        this.post = this.postService.getPost(this.id);
+        this.id = params['id'];
+        this.post = this.postService.getPost(this.id!);
       }
     );
   }
@@ -36,19 +36,15 @@ export class PostDetailComponent implements OnInit {
   }
 
   onDeletePost() {
-    this.postService.deletePost(this.id!);
-    this.save();
-    this.router.navigate(['/posts']);
-  }
-
-  private save() {
     this.loadingService.show();
-    this.dataStorageService.storePosts().subscribe(
-      response => {
+    this.dataStorageService.deletePosts(this.id!)
+      .subscribe(res => {
+        this.postService.deletePost(this.id!);
         this.loadingService.hide();
+        this.router.navigate(['/posts']);
       }, error => {
         this.loadingService.hide();
-      });
+        this.router.navigate(['/posts']);
+      })
   }
-
 }
