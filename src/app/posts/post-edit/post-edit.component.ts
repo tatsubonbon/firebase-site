@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { AuthService } from 'src/app/auth/auth.service';
+import { AlertService } from 'src/app/common/alert/alert.service';
 import { DataStorageService } from 'src/app/common/data-storage.service';
 import { LoadingSpinnerService } from 'src/app/common/loading-spinner/loading-spinner.service';
 import { Post } from '../post.model';
 import { PostService } from '../post.service';
-
 @Component({
   selector: 'app-post-edit',
   templateUrl: './post-edit.component.html',
@@ -14,6 +15,7 @@ import { PostService } from '../post.service';
 export class PostEditComponent implements OnInit {
   id: number | undefined;
   editMode = false;
+  error = '';
   postForm = new UntypedFormGroup({
     name: new UntypedFormControl(''),
     description: new UntypedFormControl(''),
@@ -23,6 +25,8 @@ export class PostEditComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private postService: PostService,
+    private alertService: AlertService,
+    private authService: AuthService,
     private dataStorageService: DataStorageService,
     private loadingService: LoadingSpinnerService,
     private router: Router) { }
@@ -39,16 +43,18 @@ export class PostEditComponent implements OnInit {
 
 
   onSubmit() {
-    const newRecipe = new Post(
+    const post = new Post(
       this.postForm?.value['name'],
       this.postForm?.value['description'],
-      this.postForm?.value['imagePath']
+      this.postForm?.value['imagePath'],
+      this.authService.getUserId()
     );
+
     if (this.editMode) {
-      this.postService.updatePost(this.id!, this.postForm?.value);
+      this.postService.updatePost(this.id!, post);
       this.save();
     } else {
-      this.postService.addPost(this.postForm?.value);
+      this.postService.addPost(post);
       this.save();
     }
     this.onCancel();
@@ -62,8 +68,10 @@ export class PostEditComponent implements OnInit {
     this.loadingService.show();
     this.dataStorageService.storePosts().subscribe(
       response => {
+        this.alertService.hideError();
         this.loadingService.hide();
       }, error => {
+        this.alertService.showError(error.message);
         this.loadingService.hide();
       });
   }

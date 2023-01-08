@@ -14,7 +14,10 @@ export class DataStorageService {
 
     storePosts() {
         const posts = this.postService.getPosts();
-        return this.http.put(environment.apiUrl + '/posts.json', posts);
+        return this.http.put(environment.apiUrl + '/posts.json', posts)
+            .pipe(
+                catchError(this.handleError)
+            );;
     }
 
     fetchPosts() {
@@ -22,17 +25,17 @@ export class DataStorageService {
             .pipe(
                 catchError(this.handleError),
                 tap(posts => {
-                    console.log(posts);
                     this.postService.setPosts(posts);
                 }))
     }
 
     private handleError(errorRes: HttpErrorResponse) {
+        console.log(errorRes);
         let errorMessage = 'An unknown error occured';
         if (!errorRes.error || !errorRes.error.error) {
             return throwError(() => new Error(errorMessage))
         }
-        errorMessage = errorRes.error.error.messagel
+        errorMessage = errorRes.error.error;
         return throwError(() => new Error(errorMessage))
     }
 }

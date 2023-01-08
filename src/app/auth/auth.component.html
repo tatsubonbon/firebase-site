@@ -3,7 +3,6 @@
         <app-loading-spinner></app-loading-spinner>
     </div>
     <div class="col-xs-12 col-md-6">
-        <app-alert [message]="error" *ngIf="error" (close)="onHandleError()"></app-alert>
         <ng-template appPlaceholder></ng-template>
         <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
             <div class="form-group">

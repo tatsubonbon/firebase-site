@@ -79,6 +79,14 @@ export class AuthService {
         }, expirationDuration);
     }
 
+    getUserId() {
+        let id: string | undefined = '';
+        this.user.subscribe(user => {
+            id = user?.id;
+        });
+        return id;
+    }
+
     private handleError(errorRes: HttpErrorResponse) {
         let errorMessage = 'An unknown error occured';
         if (!errorRes.error || !errorRes.error.error) {
