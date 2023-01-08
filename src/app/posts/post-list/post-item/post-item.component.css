@@ -1,0 +1,4 @@
+a.touch-disable {
+    pointer-events: none;
+    cursor: default;
+}

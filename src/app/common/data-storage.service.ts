@@ -37,14 +37,21 @@ export class DataStorageService {
             );
     }
 
-    fetchPosts() {
+    fetchOwnPosts(uid: string) {
         const url = [environment.apiUrl, 'posts.json']
-        return this.http.get<{ [key: string]: Post }>(url.join('/'))
+        return this.http.get<{ [key: string]: Post }>(url.join('/') + '?orderBy="uid"&equalTo=' + JSON.stringify(uid))
             .pipe(
                 catchError(this.handleError),
                 tap(posts => {
                     this.postService.setPosts(posts);
                 }))
+    }
+
+    fetchPosts() {
+        const url = [environment.apiUrl, 'posts.json']
+        return this.http.get<{ [key: string]: Post }>(url.join('/'))
+            .pipe(
+                catchError(this.handleError))
     }
 
     private handleError(errorRes: HttpErrorResponse) {

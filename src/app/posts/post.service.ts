@@ -8,12 +8,9 @@ import { Post } from "./post.model";
 export class PostService {
     PostSelected = new Subject<Post>();
     postsChanged = new Subject<{ [key: string]: Post }>();
-
-    constructor() {
-
-    }
-
     private postsDict: { [key: string]: Post } = {}
+
+    constructor() { }
 
     setPosts(postsDict: { [key: string]: Post }) {
         this.postsDict = postsDict;

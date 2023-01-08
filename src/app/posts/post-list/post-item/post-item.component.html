@@ -1,4 +1,5 @@
-<a class="list-group-item clearfix" [routerLink]="[id]" routerLinkActive="active">
+<a class="list-group-item clearfix" [class.touch-disable]="screenName === 'home' ? true : false" [routerLink]="[id]"
+    routerLinkActive="active">
     <div class="row">
         <div class="col-6">
             <h4 class="list-group-item-heading">{{ post?.name }}</h4>

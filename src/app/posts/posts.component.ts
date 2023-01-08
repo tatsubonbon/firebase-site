@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { AlertService } from '../common/alert/alert.service';
 import { DataStorageService } from '../common/data-storage.service';
 import { LoadingSpinnerService } from '../common/loading-spinner/loading-spinner.service';
@@ -20,6 +21,7 @@ export class PostsComponent {
   constructor(
     private postService: PostService,
     private loadingService: LoadingSpinnerService,
+    private authService: AuthService,
     private alertService: AlertService,
     private dataStorageService: DataStorageService,
     private router: Router,
@@ -45,13 +47,13 @@ export class PostsComponent {
 
   onFetchData() {
     this.loadingService.show();
-    this.dataStorageService.fetchPosts().subscribe(
+    this.dataStorageService.fetchOwnPosts(this.authService.getUserId()).subscribe(
       response => {
         this.alertService.hideError();
         this.loadingService.hide();
       }, error => {
         this.alertService.showError(error.message);
         this.loadingService.hide();
-      });
+      })
   }
 }

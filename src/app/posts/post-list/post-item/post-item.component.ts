@@ -9,6 +9,7 @@ import { Post } from '../../post.model';
 export class PostItemComponent implements OnInit {
   @Input() post: Post | undefined;
   @Input() id: string | undefined;
+  @Input() screenName: string = '';
 
   ngOnInit(): void {
   }
