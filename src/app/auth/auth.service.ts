@@ -47,13 +47,28 @@ export class AuthService {
         const userData: {
             email: string;
             id: string;
+            name: string;
+            accountName: string;
+            imageUrl: string;
+            followCount: number;
+            followerCount: number;
             _token: string;
             _tokenExpirationDate: string;
         } = JSON.parse(localStorage.getItem('userData')!);
         if (!userData) {
             return;
         }
-        const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+        const loadedUser = new User(
+            userData.email,
+            userData.id,
+            userData._token,
+            new Date(userData._tokenExpirationDate),
+            userData.name,
+            userData.accountName,
+            userData.imageUrl,
+            userData.followCount,
+            userData.followerCount
+        );
 
         if (loadedUser.token) {
             this.user.next(loadedUser);
@@ -106,7 +121,7 @@ export class AuthService {
                 errorMessage = 'This user is disabled';
                 break;
         }
-        return throwError(errorMessage);
+        return throwError(errorRes.error.error.message);
     }
 
     private handleAuthentification(email: string, userId: string, token: string, expiresIn: number) {

@@ -18,6 +18,7 @@ import { PostItemComponent } from './posts/post-list/post-item/post-item.compone
 import { PostListComponent } from './posts/post-list/post-list.component';
 import { PostsComponent } from './posts/posts.component';
 import { FooterComponent } from './footer/footer.component';
+import { SighupComponent } from './auth/sighup/sighup.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { FooterComponent } from './footer/footer.component';
     PostItemComponent,
     PostDetailComponent,
     HomeComponent,
-    FooterComponent
+    FooterComponent,
+    SighupComponent
   ],
   imports: [
     BrowserModule,

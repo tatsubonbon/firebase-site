@@ -12,9 +12,6 @@ import { AuthReponseData, AuthService } from './auth.service';
   styleUrls: ['./auth.component.css']
 })
 export class AuthComponent {
-  isLoginMode = true;
-
-
   private closeSub: Subscription | undefined;
 
   constructor(
@@ -32,10 +29,6 @@ export class AuthComponent {
     }
   }
 
-  onSwitchMode() {
-    this.isLoginMode = !this.isLoginMode;
-  }
-
   onSubmit(form: NgForm) {
     if (!form.valid) {
       return;
@@ -43,15 +36,10 @@ export class AuthComponent {
 
     const email = form.value.email;
     const password = form.value.password;
-
     let authObs: Observable<AuthReponseData>;
 
     this.loadingSpinnerService.show()
-    if (this.isLoginMode) {
-      authObs = this.authService.login(email, password);
-    } else {
-      authObs = this.authService.signUp(email, password);
-    }
+    authObs = this.authService.login(email, password);
 
     authObs.subscribe(response => {
       this.alertService.hideError();
@@ -61,7 +49,6 @@ export class AuthComponent {
       this.alertService.showError(errorMessage);
       this.loadingSpinnerService.hide();
     });
-
     form.reset();
   }
 }

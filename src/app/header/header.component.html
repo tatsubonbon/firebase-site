@@ -13,14 +13,15 @@
                     <a class="nav-link" routerLink="/posts">投稿</a>
                 </li>
             </ul>
-            <form class="d-flex">
-                <button class="btn btn-outline-success" type="submit" routerLink="/auth"
-                    *ngIf="!isAuthentificated">ログイン</button>
-                <button class="btn btn-outline-success" type="submit" (click)="Onlogout()"
-                    *ngIf="isAuthentificated">ログアウト</button>
-            </form>
         </div>
-
+        <form class="d-flex">
+            <button class="btn btn-outline-success" type="submit" routerLink="/signup" *ngIf="!isAuthentificated">Sign
+                Up</button>
+            <button class="btn btn-outline-success ms-1" type="submit" routerLink="/auth"
+                *ngIf="!isAuthentificated">Login</button>
+            <button class="btn btn-outline-success" type="submit" (click)="Onlogout()"
+                *ngIf="isAuthentificated">Logout</button>
+        </form>
     </div>
 </nav>
 <div *ngIf="isAuthentificated" style="text-align: center;">

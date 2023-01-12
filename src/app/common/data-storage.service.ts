@@ -4,6 +4,7 @@ import { throwError } from "rxjs";
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from "src/environments/environment.prod";
 import { AuthService } from "../auth/auth.service";
+import { User } from "../auth/user.model";
 import { Post } from "../posts/post.model";
 import { PostService } from "../posts/post.service";
 
@@ -52,6 +53,14 @@ export class DataStorageService {
         return this.http.get<{ [key: string]: Post }>(url.join('/'))
             .pipe(
                 catchError(this.handleError))
+    }
+
+    storeUser(user: User) {
+        const url = [environment.apiUrl, 'users', user.id, 'users.json']
+        return this.http.post(url.join("/"), user)
+            .pipe(
+                catchError(this.handleError)
+            );
     }
 
     private handleError(errorRes: HttpErrorResponse) {
