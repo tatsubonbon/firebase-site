@@ -27,9 +27,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.userSub = this.authService.user.subscribe(user => {
       this.isAuthentificated = !user?.id ? false : true;
     });
-    if (this.isAuthentificated) {
-      this.onFetchData();
-    }
+    this.onFetchData();
   }
 
   ngOnDestroy(): void {
