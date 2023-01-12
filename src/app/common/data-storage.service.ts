@@ -56,8 +56,8 @@ export class DataStorageService {
     }
 
     storeUser(user: User) {
-        const url = [environment.apiUrl, 'users', user.id, 'users.json']
-        return this.http.post(url.join("/"), user)
+        const url = [environment.apiUrl, 'users', user.id, '.json']
+        return this.http.put(url.join("/"), user)
             .pipe(
                 catchError(this.handleError)
             );

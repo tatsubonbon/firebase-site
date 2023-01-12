@@ -50,17 +50,6 @@ export class SighupComponent {
     authObs = this.authService.signUp(email, password);
 
     authObs.subscribe(response => {
-      this.alertService.hideError();
-      this.loadingSpinnerService.hide();
-      this.router.navigate(['/posts']);
-    }, errorMessage => {
-      this.alertService.showError(errorMessage);
-      this.loadingSpinnerService.hide();
-    });
-
-    form.reset();
-
-    authObs.subscribe(response => {
       user.id = response.localId;
       this.dataStorageService.storeUser(user).subscribe(res => {
         this.alertService.hideError();
