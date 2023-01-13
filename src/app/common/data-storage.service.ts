@@ -50,7 +50,7 @@ export class DataStorageService {
 
     fetchPosts() {
         const url = [environment.apiUrl, 'posts.json']
-        return this.http.get<{ [key: string]: Post }>(url.join('/'))
+        return this.http.get<{ [key: string]: Post }>(url.join('/') + '?orderBy="$key"&limitToLast=10')
             .pipe(
                 catchError(this.handleError))
     }

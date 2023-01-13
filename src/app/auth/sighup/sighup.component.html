@@ -6,7 +6,7 @@
         <ng-template appPlaceholder></ng-template>
         <form #authForm="ngForm" (ngSubmit)="onSubmit(authForm)">
             <div class="form-group">
-                <label for="email">E-mail</label>
+                <label for="email" autocomplete="email">E-mail</label>
                 <input id="email" type="email" class="form-control" ngModel name="email" required email>
             </div>
             <div class="form-group">
