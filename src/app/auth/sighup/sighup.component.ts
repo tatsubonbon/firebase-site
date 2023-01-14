@@ -6,7 +6,6 @@ import { AlertService } from 'src/app/common/alert/alert.service';
 import { DataStorageService } from 'src/app/common/data-storage.service';
 import { LoadingSpinnerService } from 'src/app/common/loading-spinner/loading-spinner.service';
 import { AuthReponseData, AuthService } from '../auth.service';
-import { User } from '../user.model';
 
 @Component({
   selector: 'app-sighup',
@@ -42,7 +41,6 @@ export class SighupComponent {
     const name = form.value.name;
     const accountName = form.value.accountName;
     const imageUrl = form.value.imageUrl;
-    const user = new User(email, password, name, accountName, imageUrl);
 
     let authObs: Observable<AuthReponseData>;
 
@@ -50,7 +48,16 @@ export class SighupComponent {
     authObs = this.authService.signUp(email, password);
 
     authObs.subscribe(response => {
-      user.id = response.localId;
+      const user = {
+        id: response.localId,
+        email: email,
+        name: name,
+        accountName: accountName,
+        imageUrl: imageUrl,
+        followCount: 0,
+        followerCount: 0
+      }
+
       this.dataStorageService.storeUser(user).subscribe(res => {
         this.alertService.hideError();
         this.loadingSpinnerService.hide();

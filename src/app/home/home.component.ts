@@ -2,9 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { AlertService } from '../common/alert/alert.service';
-import { DataStorageService } from '../common/data-storage.service';
+import { DataStorageService, ResponsePostsData } from '../common/data-storage.service';
 import { LoadingSpinnerService } from '../common/loading-spinner/loading-spinner.service';
-import { Post } from '../posts/post.model';
 
 @Component({
   selector: 'app-home',
@@ -14,7 +13,7 @@ import { Post } from '../posts/post.model';
 export class HomeComponent implements OnInit, OnDestroy {
   isAuthentificated = false;
   private userSub: Subscription = new Subscription;
-  postsDict: { [key: string]: Post } = {};
+  postsDict: ResponsePostsData = {};
 
   constructor(
     private authService: AuthService,

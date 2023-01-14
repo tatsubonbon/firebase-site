@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { Post } from '../post.model';
+import { ResponsePostsData } from 'src/app/common/data-storage.service';
 import { PostService } from '../post.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { PostService } from '../post.service';
   styleUrls: ['./post-list.component.css']
 })
 export class PostListComponent {
-  postsDict: { [key: string]: Post } = {};
+  postsDict: ResponsePostsData = {};
   subscription: Subscription = new Subscription;
 
   constructor(private postService: PostService, private router: Router, private route: ActivatedRoute) { }

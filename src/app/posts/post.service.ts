@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Subject } from "rxjs";
+import { ResponsePostsData } from "../common/data-storage.service";
 
 import { Post } from "./post.model";
 
@@ -7,12 +8,12 @@ import { Post } from "./post.model";
 @Injectable({ providedIn: 'root' })
 export class PostService {
     PostSelected = new Subject<Post>();
-    postsChanged = new Subject<{ [key: string]: Post }>();
-    private postsDict: { [key: string]: Post } = {}
+    postsChanged = new Subject<ResponsePostsData>();
+    private postsDict: ResponsePostsData = {}
 
     constructor() { }
 
-    setPosts(postsDict: { [key: string]: Post }) {
+    setPosts(postsDict: ResponsePostsData) {
         this.postsDict = postsDict;
         this.postsChanged.next(postsDict);
     }
@@ -29,7 +30,7 @@ export class PostService {
         return this.postsDict[key];
     }
 
-    addPost(postsDict: { [key: string]: Post }) {
+    addPost(postsDict: ResponsePostsData) {
         Object.keys(postsDict).forEach((key: string) => {
             this.postsDict[key] = postsDict[key];
         })

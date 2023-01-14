@@ -4,9 +4,22 @@ import { throwError } from "rxjs";
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from "src/environments/environment.prod";
 import { AuthService } from "../auth/auth.service";
-import { User } from "../auth/user.model";
 import { Post } from "../posts/post.model";
 import { PostService } from "../posts/post.service";
+
+export interface StoreUserData {
+    id: string;
+    email: string;
+    name: string;
+    accountName: string;
+    imageUrl: string;
+    followCount: number;
+    followerCount: number;
+}
+
+export interface ResponsePostsData {
+    [key: string]: Post
+}
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
@@ -21,7 +34,7 @@ export class DataStorageService {
             );
     }
 
-    editPosts(postDict: { [key: string]: Post }) {
+    editPosts(postDict: ResponsePostsData) {
         const key: string = Object.keys(postDict)[0];
         const url = [environment.apiUrl, 'posts', key + '.json'];
         return this.http.put(url.join("/"), postDict[key])
@@ -40,7 +53,7 @@ export class DataStorageService {
 
     fetchOwnPosts(uid: string) {
         const url = [environment.apiUrl, 'posts.json']
-        return this.http.get<{ [key: string]: Post }>(url.join('/') + '?orderBy="uid"&equalTo=' + JSON.stringify(uid))
+        return this.http.get<ResponsePostsData>(url.join('/') + '?orderBy="uid"&equalTo=' + JSON.stringify(uid))
             .pipe(
                 catchError(this.handleError),
                 tap(posts => {
@@ -50,12 +63,12 @@ export class DataStorageService {
 
     fetchPosts() {
         const url = [environment.apiUrl, 'posts.json']
-        return this.http.get<{ [key: string]: Post }>(url.join('/') + '?orderBy="$key"&limitToLast=10')
+        return this.http.get<ResponsePostsData>(url.join('/') + '?orderBy="$key"&limitToLast=10')
             .pipe(
                 catchError(this.handleError))
     }
 
-    storeUser(user: User) {
+    storeUser(user: StoreUserData) {
         const url = [environment.apiUrl, 'users', user.id, '.json']
         return this.http.put(url.join("/"), user)
             .pipe(
