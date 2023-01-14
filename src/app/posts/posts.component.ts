@@ -3,9 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { AlertService } from '../common/alert/alert.service';
-import { DataStorageService } from '../common/data-storage.service';
+import { DataStorageService, ResponsePostsData } from '../common/data-storage.service';
 import { LoadingSpinnerService } from '../common/loading-spinner/loading-spinner.service';
-import { Post } from './post.model';
 import { PostService } from './post.service';
 
 @Component({
@@ -14,7 +13,7 @@ import { PostService } from './post.service';
   styleUrls: ['./posts.component.css']
 })
 export class PostsComponent {
-  postsDict: { [key: string]: Post } = {};
+  postsDict: ResponsePostsData = {};
   subscription: Subscription = new Subscription;
   error = '';
 
@@ -30,7 +29,7 @@ export class PostsComponent {
 
   ngOnInit(): void {
     this.subscription = this.postService.postsChanged.subscribe(
-      (postsDict: { [key: string]: Post }) => {
+      (postsDict: ResponsePostsData) => {
         this.postsDict = postsDict;
       }
     )
