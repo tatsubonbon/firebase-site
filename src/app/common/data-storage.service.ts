@@ -1,7 +1,8 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { throwError } from "rxjs";
-import { catchError, tap } from 'rxjs/operators';
+import { AngularFireStorage } from "@angular/fire/compat/storage";
+import { Observable, throwError } from "rxjs";
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { environment } from "src/environments/environment.prod";
 import { AuthService } from "../auth/auth.service";
 import { Post } from "../posts/post.model";
@@ -23,7 +24,13 @@ export interface ResponsePostsData {
 
 @Injectable({ providedIn: 'root' })
 export class DataStorageService {
-    constructor(private http: HttpClient, private postService: PostService, private authService: AuthService) {
+    uploadPercent: Observable<number | undefined> = new Observable();
+    downloadURL: Observable<string | undefined> = new Observable();
+
+    constructor(private http: HttpClient,
+        private postService: PostService,
+        private storage: AngularFireStorage,
+        private authService: AuthService) {
     }
 
     storePosts(post: Post) {
@@ -74,6 +81,32 @@ export class DataStorageService {
             .pipe(
                 catchError(this.handleError)
             );
+    }
+
+    storeFile(file: File) {
+        const filePath = this.authService.getUserId() + Date.now();
+        const ref = this.storage.ref(filePath);
+        const task = ref.put(file);
+
+        this.uploadPercent = task.percentageChanges();
+        return task.snapshotChanges().pipe(
+            catchError(this.handleError),
+            finalize(() => this.downloadURL = ref.getDownloadURL())
+        )
+    }
+
+    deleteFile(path: string) {
+        const ref = this.storage.refFromURL(path);
+        const task = ref.delete();
+
+        return task.pipe(
+            catchError(this.handleError),
+        )
+    }
+
+    getFile(path: string) {
+        const ref = this.storage.ref(path);
+        return ref.getDownloadURL();
     }
 
     private handleError(errorRes: HttpErrorResponse) {

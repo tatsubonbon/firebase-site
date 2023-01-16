@@ -17,10 +17,11 @@ export class PostEditComponent implements OnInit {
   id: string | undefined;
   editMode = false;
   error = '';
+  selectedFile: File | undefined;
   postForm = new UntypedFormGroup({
     name: new UntypedFormControl(''),
     description: new UntypedFormControl(''),
-    imagePath: new UntypedFormControl(''),
+    imagePath: new UntypedFormControl(),
   });
 
   constructor(
@@ -42,31 +43,87 @@ export class PostEditComponent implements OnInit {
     );
   }
 
-
   onSubmit() {
-    const post = new Post(
-      this.postForm?.value['name'],
-      this.postForm?.value['description'],
-      this.postForm?.value['imagePath'],
-      this.authService.getUserId()
-    );
-
-    this.loadingService.show();
     if (this.editMode) {
+      this.editPost();
+    } else {
+      this.storePost();
+    }
+  }
+
+  storePost() {
+    this.loadingService.show();
+    this.dataStorageService.storeFile(this.selectedFile!).subscribe(
+      storageRes => {
+        if (storageRes?.state == 'success') {
+          this.dataStorageService.getFile(storageRes.metadata.fullPath).subscribe(
+            path => {
+              const post = new Post(
+                this.postForm?.value['name'],
+                this.postForm?.value['description'],
+                path,
+                this.authService.getUserId()
+              );
+              this.dataStorageService.storePosts(post).subscribe(
+                response => {
+                  const res = <{ [name: string]: string }>response;
+                  this.postService.addPost({ [res["name"]]: post });
+                  this.alertService.hideError();
+                  this.loadingService.hide();
+                }, error => {
+                  this.alertService.showError(error.message);
+                  this.loadingService.hide();
+                });
+            }
+          )
+        }
+      }
+    )
+    this.onCancel();
+  }
+
+  editPost() {
+    this.loadingService.show();
+    if (this.selectedFile) {
+      // ファイルを選択している場合
+      this.dataStorageService.deleteFile(this.postService.getPost(this.id!).imagePath).subscribe();
+      this.dataStorageService.storeFile(this.selectedFile!).subscribe(
+        storageRes => {
+          if (storageRes?.state == 'success') {
+            this.dataStorageService.getFile(storageRes.metadata.fullPath).subscribe(
+              path => {
+                const post = new Post(
+                  this.postForm?.value['name'],
+                  this.postForm?.value['description'],
+                  path,
+                  this.authService.getUserId()
+                );
+                this.dataStorageService.editPosts({ [this.id!]: post }).subscribe(
+                  response => {
+                    this.postService.updatePost(this.id!, post);
+                    this.alertService.hideError();
+                    this.loadingService.hide();
+                  }, error => {
+                    this.alertService.showError(error.message);
+                    this.loadingService.hide();
+                  });
+              }
+            )
+          }
+        }
+      )
+    } else {
+      // ファイルを選択していない場合
+      const imagePath = this.postService.getPost(this.id!).imagePath;
+      const post = new Post(
+        this.postForm?.value['name'],
+        this.postForm?.value['description'],
+        imagePath,
+        this.authService.getUserId()
+      );
       this.dataStorageService.editPosts({ [this.id!]: post }).subscribe(
         response => {
           this.postService.updatePost(this.id!, post);
-          this.alertService.hideError();
-          this.loadingService.hide();
-        }, error => {
-          this.alertService.showError(error.message);
-          this.loadingService.hide();
-        });
-    } else {
-      this.dataStorageService.storePosts(post).subscribe(
-        response => {
-          const res = <{ [name: string]: string }>response;
-          this.postService.addPost({ [res["name"]]: post });
           this.alertService.hideError();
           this.loadingService.hide();
         }, error => {
@@ -77,27 +134,36 @@ export class PostEditComponent implements OnInit {
     this.onCancel();
   }
 
+  changeFile(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
   onCancel() {
     this.router.navigate(['posts']), { relativeTo: this.route };
   }
 
-
   private initForm() {
     let name = '';
-    let imagePath = '';
     let description = '';
 
     if (this.editMode) {
       const post: Post = this.postService.getPost(this.id!);
       name = post?.name;
-      imagePath = post?.imagePath;
       description = post?.description;
     }
 
-    this.postForm = new UntypedFormGroup({
-      'name': new UntypedFormControl(name, Validators.required),
-      'imagePath': new UntypedFormControl(imagePath, Validators.required),
-      'description': new UntypedFormControl(description),
-    });
+    if (this.editMode) {
+      this.postForm = new UntypedFormGroup({
+        'name': new UntypedFormControl(name, Validators.required),
+        'imagePath': new UntypedFormControl(''),
+        'description': new UntypedFormControl(description),
+      });
+    } else {
+      this.postForm = new UntypedFormGroup({
+        'name': new UntypedFormControl(name, Validators.required),
+        'imagePath': new UntypedFormControl('', Validators.required),
+        'description': new UntypedFormControl(description),
+      });
+    }
   }
 }

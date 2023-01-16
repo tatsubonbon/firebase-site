@@ -39,6 +39,7 @@ export class PostDetailComponent implements OnInit {
     this.loadingService.show();
     this.dataStorageService.deletePosts(this.id!)
       .subscribe(res => {
+        this.dataStorageService.deleteFile(this.postService.getPost(this.id!).imagePath).subscribe();
         this.postService.deletePost(this.id!);
         this.loadingService.hide();
         this.router.navigate(['/posts']);

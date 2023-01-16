@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ng-firebase-site-fbe1a": {
+      "hosting": {
+        "firebase-site": [
+          "ng-firebase-site-fbe1a"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ng-firebase-site-fbe1a"
+  }
+}
