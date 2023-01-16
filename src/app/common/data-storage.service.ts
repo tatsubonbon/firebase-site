@@ -8,6 +8,7 @@ import { AuthService } from "../auth/auth.service";
 import { Post } from "../posts/post.model";
 import { PostService } from "../posts/post.service";
 
+
 export interface StoreUserData {
     id: string;
     email: string;
@@ -84,7 +85,7 @@ export class DataStorageService {
     }
 
     storeFile(file: File) {
-        const filePath = this.authService.getUserId() + Date.now();
+        const filePath = ['posts', this.authService.getUserId(), '', Date.now()].join('/');
         const ref = this.storage.ref(filePath);
         const task = ref.put(file);
 
