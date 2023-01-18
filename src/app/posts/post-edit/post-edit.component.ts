@@ -7,7 +7,6 @@ import { DataStorageService } from 'src/app/common/data-storage.service';
 import { LoadingSpinnerService } from 'src/app/common/loading-spinner/loading-spinner.service';
 import { Post } from '../post.model';
 import { PostService } from '../post.service';
-
 @Component({
   selector: 'app-post-edit',
   templateUrl: './post-edit.component.html',
@@ -53,7 +52,8 @@ export class PostEditComponent implements OnInit {
 
   storePost() {
     this.loadingService.show();
-    this.dataStorageService.storeFile(this.selectedFile!).subscribe(
+    const filePath = ['posts', this.authService.getUserId(), Date.now()].join('/');
+    this.dataStorageService.storeFile(this.selectedFile!, filePath).subscribe(
       storageRes => {
         if (storageRes?.state == 'success') {
           this.dataStorageService.getFile(storageRes.metadata.fullPath).subscribe(
@@ -87,7 +87,8 @@ export class PostEditComponent implements OnInit {
     if (this.selectedFile) {
       // ファイルを選択している場合
       this.dataStorageService.deleteFile(this.postService.getPost(this.id!).imagePath).subscribe();
-      this.dataStorageService.storeFile(this.selectedFile!).subscribe(
+      const filePath = ['posts', this.authService.getUserId(), Date.now()].join('/');
+      this.dataStorageService.storeFile(this.selectedFile!, filePath).subscribe(
         storageRes => {
           if (storageRes?.state == 'success') {
             this.dataStorageService.getFile(storageRes.metadata.fullPath).subscribe(

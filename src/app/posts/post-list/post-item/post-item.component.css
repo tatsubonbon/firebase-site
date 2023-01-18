@@ -2,3 +2,7 @@ a.touch-disable {
     pointer-events: none;
     cursor: default;
 }
+
+.description {
+    white-space: pre-wrap;
+}

@@ -84,8 +84,7 @@ export class DataStorageService {
             );
     }
 
-    storeFile(file: File) {
-        const filePath = ['posts', this.authService.getUserId(), '', Date.now()].join('/');
+    storeFile(file: File, filePath: string) {
         const ref = this.storage.ref(filePath);
         const task = ref.put(file);
 

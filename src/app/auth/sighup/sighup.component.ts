@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { mergeMap } from 'rxjs';
 import { Observable } from 'rxjs/internal/Observable';
 import { AlertService } from 'src/app/common/alert/alert.service';
 import { DataStorageService } from 'src/app/common/data-storage.service';
 import { LoadingSpinnerService } from 'src/app/common/loading-spinner/loading-spinner.service';
 import { AuthReponseData, AuthService } from '../auth.service';
-
 @Component({
   selector: 'app-sighup',
   templateUrl: './sighup.component.html',
@@ -21,15 +21,7 @@ export class SighupComponent {
     private loadingSpinnerService: LoadingSpinnerService
   ) { }
 
-  form: FormGroup = new FormGroup(
-    {
-      email: new FormControl('', Validators.required),
-      password: new FormControl('', Validators.required),
-      name: new FormControl('', Validators.required),
-      accountName: new FormControl('', Validators.required),
-      imageUrl: new FormControl('', Validators.required),
-    }
-  );
+  selectedFile: File | undefined;
 
   onSubmit(form: NgForm) {
     if (!form.valid) {
@@ -40,25 +32,65 @@ export class SighupComponent {
     const password = form.value.password;
     const name = form.value.name;
     const accountName = form.value.accountName;
-    const imageUrl = form.value.imageUrl;
 
     let authObs: Observable<AuthReponseData>;
 
     this.loadingSpinnerService.show()
     authObs = this.authService.signUp(email, password);
 
-    authObs.subscribe(response => {
-      const user = {
-        id: response.localId,
-        email: email,
-        name: name,
-        accountName: accountName,
-        imageUrl: imageUrl,
-        followCount: 0,
-        followerCount: 0
-      }
-
-      this.dataStorageService.storeUser(user).subscribe(res => {
+    if (this.selectedFile) {
+      // 画像が選択されている場合
+      authObs.subscribe(response => {
+        const userId = response.localId;
+        const filePath = ['users', this.authService.getUserId(), Date.now()].join('/');
+        this.dataStorageService.storeFile(this.selectedFile!, filePath)
+          .subscribe(
+            storageRes => {
+              if (storageRes?.state == 'success') {
+                this.dataStorageService.getFile(storageRes.metadata.fullPath).subscribe(
+                  path => {
+                    const user = {
+                      id: userId,
+                      email: email,
+                      name: name,
+                      accountName: accountName,
+                      imageUrl: path,
+                      followCount: 0,
+                      followerCount: 0
+                    }
+                    this.dataStorageService.storeUser(user).subscribe(res => {
+                      this.alertService.hideError();
+                      this.loadingSpinnerService.hide();
+                      this.router.navigate(['/posts']);
+                    }, error => {
+                      this.alertService.showError(error.errorMessage);
+                      this.loadingSpinnerService.hide();
+                    })
+                  }
+                )
+              }
+            }
+          )
+      }, error => {
+        this.alertService.showError(error.errorMessage);
+        this.loadingSpinnerService.hide();
+      });
+    } else {
+      // 画像が選択されていない場合
+      authObs.pipe(
+        mergeMap(res => {
+          const user = {
+            id: res.localId,
+            email: email,
+            name: name,
+            accountName: accountName,
+            imageUrl: '',
+            followCount: 0,
+            followerCount: 0
+          }
+          return this.dataStorageService.storeUser(user)
+        })
+      ).subscribe(res => {
         this.alertService.hideError();
         this.loadingSpinnerService.hide();
         this.router.navigate(['/posts']);
@@ -66,11 +98,11 @@ export class SighupComponent {
         this.alertService.showError(error.errorMessage);
         this.loadingSpinnerService.hide();
       })
-    }, error => {
-      this.alertService.showError(error.errorMessage);
-      this.loadingSpinnerService.hide();
-    });
-
+    };
     form.reset();
+  }
+
+  changeFile(event: any) {
+    this.selectedFile = event.target.files[0];
   }
 }
